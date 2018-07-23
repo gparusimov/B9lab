@@ -1,0 +1,12 @@
+# Logs
+logs
+*.log
+
+# Dependency directory
+node_modules
+
+# Generated files
+build
+dist
+.idea
+front-end/src/contracts
