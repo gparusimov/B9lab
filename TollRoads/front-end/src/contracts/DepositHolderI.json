@@ -1,0 +1,566 @@
+{
+  "contractName": "DepositHolderI",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "depositWeis",
+          "type": "uint256"
+        }
+      ],
+      "name": "LogDepositSet",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "depositWeis",
+          "type": "uint256"
+        }
+      ],
+      "name": "setDeposit",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getDeposit",
+      "outputs": [
+        {
+          "name": "weis",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.4.21;\n\ncontract DepositHolderI {\n\n    /**\n     * Event emitted when the deposit value has been set.\n     * @param sender The account that ran the action.\n     * @param depositWeis The value of the deposit measured in weis.\n     */\n    event LogDepositSet(address indexed sender, uint depositWeis);\n\n    /**\n     * Called by the owner of the DepositHolder.\n     *     It should roll back if the caller is not the owner of the contract.\n     *     It should roll back if the argument passed is 0.\n     *     It should roll back if the argument is no different from the current deposit.\n     * @param depositWeis The value of the deposit being set, measured in weis.\n     * @return Whether the action was successful.\n     * Emits LogDepositSet with:\n     *     The sender of the action.\n     *     The new value that was set.\n     */\n    function setDeposit(uint depositWeis)\n        public\n        returns(bool success);\n\n    /**\n     * @return The base price, then to be multiplied by the multiplier, a given vehicle\n     * needs to deposit to enter the road system.\n     */\n    function getDeposit()\n        constant\n        public\n        returns(uint weis);\n\n    /*\n     * You need to create:\n     *\n     * - a contract named `DepositHolder` that:\n     *     - is `OwnedI`, and `DepositHolderI`.\n     *     - has a constructor that takes:\n     *         - one `uint` parameter, the initial deposit wei value, which cannot be 0.\n     */        \n}",
+  "sourcePath": "/home/vagrant/DAPPS/contracts/interfaces/DepositHolderI.sol",
+  "ast": {
+    "absolutePath": "/home/vagrant/DAPPS/contracts/interfaces/DepositHolderI.sol",
+    "exportedSymbols": {
+      "DepositHolderI": [
+        1631
+      ]
+    },
+    "id": 1632,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1612,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".21"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:10"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1631,
+        "linearizedBaseContracts": [
+          1631
+        ],
+        "name": "DepositHolderI",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": "Event emitted when the deposit value has been set.\n@param sender The account that ran the action.\n@param depositWeis The value of the deposit measured in weis.",
+            "id": 1618,
+            "name": "LogDepositSet",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1617,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1614,
+                  "indexed": true,
+                  "name": "sender",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1618,
+                  "src": "274:22:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1613,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "274:7:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1616,
+                  "indexed": false,
+                  "name": "depositWeis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1618,
+                  "src": "298:16:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1615,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "298:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "273:42:10"
+            },
+            "src": "254:62:10"
+          },
+          {
+            "body": null,
+            "documentation": "Called by the owner of the DepositHolder.\n    It should roll back if the caller is not the owner of the contract.\n    It should roll back if the argument passed is 0.\n    It should roll back if the argument is no different from the current deposit.\n@param depositWeis The value of the deposit being set, measured in weis.\n@return Whether the action was successful.\nEmits LogDepositSet with:\n    The sender of the action.\n    The new value that was set.",
+            "id": 1625,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "setDeposit",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1621,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1620,
+                  "name": "depositWeis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1625,
+                  "src": "874:16:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1619,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "874:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "873:18:10"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1624,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1623,
+                  "name": "success",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1625,
+                  "src": "923:12:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1622,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "923:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "922:14:10"
+            },
+            "scope": 1631,
+            "src": "854:83:10",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@return The base price, then to be multiplied by the multiplier, a given vehicle\nneeds to deposit to enter the road system.",
+            "id": 1630,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getDeposit",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1626,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1116:2:10"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1629,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1628,
+                  "name": "weis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1630,
+                  "src": "1167:9:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1627,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1167:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1166:11:10"
+            },
+            "scope": 1631,
+            "src": "1097:81:10",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1632,
+        "src": "26:1440:10"
+      }
+    ],
+    "src": "0:1466:10"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/vagrant/DAPPS/contracts/interfaces/DepositHolderI.sol",
+    "exportedSymbols": {
+      "DepositHolderI": [
+        1631
+      ]
+    },
+    "id": 1632,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1612,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".21"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:10"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1631,
+        "linearizedBaseContracts": [
+          1631
+        ],
+        "name": "DepositHolderI",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": "Event emitted when the deposit value has been set.\n@param sender The account that ran the action.\n@param depositWeis The value of the deposit measured in weis.",
+            "id": 1618,
+            "name": "LogDepositSet",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1617,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1614,
+                  "indexed": true,
+                  "name": "sender",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1618,
+                  "src": "274:22:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1613,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "274:7:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1616,
+                  "indexed": false,
+                  "name": "depositWeis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1618,
+                  "src": "298:16:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1615,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "298:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "273:42:10"
+            },
+            "src": "254:62:10"
+          },
+          {
+            "body": null,
+            "documentation": "Called by the owner of the DepositHolder.\n    It should roll back if the caller is not the owner of the contract.\n    It should roll back if the argument passed is 0.\n    It should roll back if the argument is no different from the current deposit.\n@param depositWeis The value of the deposit being set, measured in weis.\n@return Whether the action was successful.\nEmits LogDepositSet with:\n    The sender of the action.\n    The new value that was set.",
+            "id": 1625,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "setDeposit",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1621,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1620,
+                  "name": "depositWeis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1625,
+                  "src": "874:16:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1619,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "874:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "873:18:10"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1624,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1623,
+                  "name": "success",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1625,
+                  "src": "923:12:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1622,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "923:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "922:14:10"
+            },
+            "scope": 1631,
+            "src": "854:83:10",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@return The base price, then to be multiplied by the multiplier, a given vehicle\nneeds to deposit to enter the road system.",
+            "id": 1630,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getDeposit",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1626,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1116:2:10"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1629,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1628,
+                  "name": "weis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1630,
+                  "src": "1167:9:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1627,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1167:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1166:11:10"
+            },
+            "scope": 1631,
+            "src": "1097:81:10",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1632,
+        "src": "26:1440:10"
+      }
+    ],
+    "src": "0:1466:10"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.21+commit.dfe3193c.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-07-02T14:38:41.114Z"
+}

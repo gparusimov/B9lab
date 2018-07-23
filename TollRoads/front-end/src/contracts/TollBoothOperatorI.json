@@ -1,0 +1,2713 @@
+{
+  "contractName": "TollBoothOperatorI",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "vehicle",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "entryBooth",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "exitSecretHashed",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "depositedWeis",
+          "type": "uint256"
+        }
+      ],
+      "name": "LogRoadEntered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "exitBooth",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "exitSecretHashed",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "finalFee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "refundWeis",
+          "type": "uint256"
+        }
+      ],
+      "name": "LogRoadExited",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "exitSecretHashed",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "entryBooth",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "exitBooth",
+          "type": "address"
+        }
+      ],
+      "name": "LogPendingPayment",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "LogFeesCollected",
+      "type": "event"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "secret",
+          "type": "bytes32"
+        }
+      ],
+      "name": "hashSecret",
+      "outputs": [
+        {
+          "name": "hashed",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "entryBooth",
+          "type": "address"
+        },
+        {
+          "name": "exitSecretHashed",
+          "type": "bytes32"
+        }
+      ],
+      "name": "enterRoad",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "exitSecretHashed",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getVehicleEntry",
+      "outputs": [
+        {
+          "name": "vehicle",
+          "type": "address"
+        },
+        {
+          "name": "entryBooth",
+          "type": "address"
+        },
+        {
+          "name": "depositedWeis",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "exitSecretClear",
+          "type": "bytes32"
+        }
+      ],
+      "name": "reportExitRoad",
+      "outputs": [
+        {
+          "name": "status",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "entryBooth",
+          "type": "address"
+        },
+        {
+          "name": "exitBooth",
+          "type": "address"
+        }
+      ],
+      "name": "getPendingPaymentCount",
+      "outputs": [
+        {
+          "name": "count",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "entryBooth",
+          "type": "address"
+        },
+        {
+          "name": "exitBooth",
+          "type": "address"
+        },
+        {
+          "name": "count",
+          "type": "uint256"
+        }
+      ],
+      "name": "clearSomePendingPayments",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getCollectedFeesAmount",
+      "outputs": [
+        {
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "withdrawCollectedFees",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.4.21;\n\ncontract TollBoothOperatorI {\n\n    /**\n     * This provides a single source of truth for the encoding algorithm.\n     * It will be called:\n     *     - by the vehicle prior to sending a deposit.\n     *     - by the contract itself when submitted a clear password by a toll booth.\n     * @param secret The secret to be hashed.\n     * @return the hashed secret.\n     */\n    function hashSecret(bytes32 secret)\n        constant\n        public\n        returns(bytes32 hashed);\n\n    /**\n     * Event emitted when a vehicle made the appropriate deposit to enter the road system.\n     * @param vehicle The address of the vehicle that entered the road system.\n     * @param entryBooth The declared entry booth by which the vehicle will enter the system.\n     * @param exitSecretHashed A hashed secret that, when solved, allows the operator to pay itself.\n     * @param depositedWeis The amount that was deposited as part of the entry.\n     */\n    event LogRoadEntered(\n        address indexed vehicle,\n        address indexed entryBooth,\n        bytes32 indexed exitSecretHashed,\n        uint depositedWeis);\n\n    /**\n     * Called by the vehicle entering a road system.\n     * Off-chain, the entry toll booth will open its gate after a successful deposit and a confirmation\n     * of the vehicle identity.\n     *     It should roll back when the contract is in the `true` paused state.\n     *     It should roll back when the vehicle is not a registered vehicle.\n     *     It should roll back when the vehicle is not allowed on this road system.\n     *     It should roll back if `entryBooth` is not a tollBooth.\n     *     It should roll back if less than deposit * multiplier was sent alongside.\n     *     It should roll back if `exitSecretHashed` has previously been used by anyone to enter.\n     *     It should be possible for a vehicle to enter \"again\" before it has exited from the \n     *       previous entry.\n     * @param entryBooth The declared entry booth by which the vehicle will enter the system.\n     * @param exitSecretHashed A hashed secret that when solved allows the operator to pay itself.\n     * @return Whether the action was successful.\n     * Emits LogRoadEntered with:\n     *     The sender of the action.\n     *     The address of the entry booth.\n     *     The hashed secret used to deposit.\n     *     The amount deposited by the vehicle.\n     */\n    function enterRoad(\n            address entryBooth,\n            bytes32 exitSecretHashed)\n        public\n        payable\n        returns (bool success);\n\n    /**\n     * @param exitSecretHashed The hashed secret used by the vehicle when entering the road.\n     * @return The information pertaining to the entry of the vehicle.\n     *     vehicle: the address of the vehicle that entered the system.\n     *     entryBooth: the address of the booth the vehicle entered at.\n     *     depositedWeis: how much the vehicle deposited when entering.\n     * After the vehicle has exited, `depositedWeis` should be returned as `0`.\n     * If no vehicles had ever entered with this hash, all values should be returned as `0`.\n     */\n    function getVehicleEntry(bytes32 exitSecretHashed)\n        constant\n        public\n        returns(\n            address vehicle,\n            address entryBooth,\n            uint depositedWeis);\n\n    /**\n     * Event emitted when a vehicle exits a road system.\n     * @param exitBooth The toll booth that saw the vehicle exit.\n     * @param exitSecretHashed The hash of the secret given by the vehicle as it\n     *     passed by the exit booth.\n     * @param finalFee The toll charge effectively paid by the vehicle, and taken from the deposit.\n     * @param refundWeis The amount refunded to the vehicle, i.e. deposit - charge.\n     */\n    event LogRoadExited(\n        address indexed exitBooth,\n        bytes32 indexed exitSecretHashed,\n        uint finalFee,\n        uint refundWeis);\n\n    /**\n     * Event emitted when a vehicle used a route that has no known fee.\n     * It is a signal for the oracle to provide a price for the entry / exit pair.\n     * @param exitSecretHashed The hashed secret that was defined at the time of entry.\n     * @param entryBooth The address of the booth the vehicle entered at.\n     * @param exitBooth The address of the booth the vehicle exited at.\n     */\n    event LogPendingPayment(\n        bytes32 indexed exitSecretHashed,\n        address indexed entryBooth,\n        address indexed exitBooth);\n\n    /**\n     * Called by the exit booth.\n     *     It should roll back when the contract is in the `true` paused state.\n     *     It should roll back when the sender is not a toll booth.\n     *     It should roll back when the vehicle is no longer a registered vehicle.\n     *     It should roll back when the vehicle is no longer allowed on this road system.\n     *     It should roll back if the exit is same as the entry.\n     *     It should roll back if hashing the secret does not match a hashed one.\n     *     It should roll back if the secret has already been reported on exit.\n     * @param exitSecretClear The secret given by the vehicle as it passed by the exit booth.\n     * @return status:\n     *   1: success, -> emits LogRoadExited with:\n     *       The sender of the action.\n     *       The hashed secret corresponding to the vehicle trip.\n     *       The effective charge paid by the vehicle.\n     *       The amount refunded to the vehicle.\n     *   2: pending oracle -> emits LogPendingPayment with:\n     *       The hashed secret corresponding to the vehicle trip.\n     *       The entry booth of the vehicle trip.\n     *       The exit booth of the vehicle trip.\n     */\n    function reportExitRoad(bytes32 exitSecretClear)\n        public\n        returns (uint status);\n\n    /**\n     * @param entryBooth the entry booth that has pending payments.\n     * @param exitBooth the exit booth that has pending payments.\n     * @return the number of payments that are pending because the price for the\n     * entry-exit pair was unknown.\n     */\n    function getPendingPaymentCount(address entryBooth, address exitBooth)\n        constant\n        public\n        returns (uint count);\n\n    /**\n     * Can be called by anyone. In case more than 1 payment was pending when the oracle gave a price.\n     *     It should roll back when the contract is in `true` paused state.\n     *     It should roll back if booths are not really booths.\n     *     It should roll back if there are fewer than `count` pending payments that are solvable.\n     *     It should roll back if `count` is `0`.\n     * @param entryBooth the entry booth that has pending payments.\n     * @param exitBooth the exit booth that has pending payments.\n     * @param count the number of pending payments to clear for the exit booth.\n     * @return Whether the action was successful.\n     * Emits LogRoadExited as many times as count, each with:\n     *       The address of the exit booth.\n     *       The hashed secret corresponding to the vehicle trip.\n     *       The effective charge paid by the vehicle.\n     *       The amount refunded to the vehicle.\n     */\n    function clearSomePendingPayments(\n            address entryBooth,\n            address exitBooth,\n            uint count)\n        public\n        returns (bool success);\n\n    /**\n     * @return The amount that has been collected through successful payments. This is the current\n     *   amount, it does not reflect historical fees. So this value goes back to zero after a call\n     *   to `withdrawCollectedFees`.\n     */\n    function getCollectedFeesAmount()\n        constant\n        public\n        returns(uint amount);\n\n    /**\n     * Event emitted when the owner collects the fees.\n     * @param owner The account that sent the request.\n     * @param amount The amount collected.\n     */\n    event LogFeesCollected(\n        address indexed owner,\n        uint amount);\n\n    /**\n     * Called by the owner of the contract to withdraw all collected fees (not deposits) to date.\n     *     It should roll back if any other address is calling this function.\n     *     It should roll back if there is no fee to collect.\n     *     It should roll back if the transfer failed.\n     * @return success Whether the operation was successful.\n     * Emits LogFeesCollected with:\n     *     The sender of the action.\n     *     The amount collected.\n     */\n    function withdrawCollectedFees()\n        public\n        returns(bool success);\n\n    /**\n     * This function is commented out otherwise it prevents compilation of the completed contracts.\n     * This function overrides the eponymous function of `RoutePriceHolderI`, to which it adds the following\n     * functionality:\n     *     - If relevant, it will release 1 pending payment for this route. As part of this payment\n     *       release, it will emit the appropriate `LogRoadExited` event.\n     *     - In the case where the next relevant pending payment, i.e. at the top of the FIFO, is not solvable,\n     *       which can happen if, for instance the vehicle has had wrongly set values (such as type or multiplier)\n     *       in the interim:\n     *       - It should release 0 pending payment\n     *       - It should not roll back the transaction\n     *       - It should behave as if there had been no pending payment, apart from the higher gas consumed.\n     *     - It should be possible to call it even when the contract is in the `true` paused state.\n     * Emits LogRoadExited, if applicable, with:\n     *       The address of the exit booth.\n     *       The hashed secret corresponding to the vehicle trip.\n     *       The effective charge paid by the vehicle.\n     *       The amount refunded to the vehicle.\n     */\n    // function setRoutePrice(\n    //         address entryBooth,\n    //         address exitBooth,\n    //         uint priceWeis)\n    //     public\n    //     returns(bool success);\n\n    /*\n     * You need to create:\n     *\n     * - a contract named `TollBoothOperator` that:\n     *     - is `OwnedI`, `PausableI`, `DepositHolderI`, `TollBoothHolderI`,\n     *         `MultiplierHolderI`, `RoutePriceHolderI`, `RegulatedI` and `TollBoothOperatorI`.\n     *     - has a constructor that takes:\n     *         - one `bool` parameter, the initial paused state.\n     *         - one `uint` parameter, the initial deposit wei value, which cannot be 0.\n     *         - one `address` parameter, the initial regulator, which cannot be 0.\n     *     - a fallback function that rejects all incoming calls.\n     */\n}",
+  "sourcePath": "/home/vagrant/DAPPS/contracts/interfaces/TollBoothOperatorI.sol",
+  "ast": {
+    "absolutePath": "/home/vagrant/DAPPS/contracts/interfaces/TollBoothOperatorI.sol",
+    "exportedSymbols": {
+      "TollBoothOperatorI": [
+        1959
+      ]
+    },
+    "id": 1960,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1860,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".21"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:18"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1959,
+        "linearizedBaseContracts": [
+          1959
+        ],
+        "name": "TollBoothOperatorI",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "This provides a single source of truth for the encoding algorithm.\nIt will be called:\n    - by the vehicle prior to sending a deposit.\n    - by the contract itself when submitted a clear password by a toll booth.\n@param secret The secret to be hashed.\n@return the hashed secret.",
+            "id": 1867,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "hashSecret",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1863,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1862,
+                  "name": "secret",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1867,
+                  "src": "418:14:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1861,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "418:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "417:16:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1866,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1865,
+                  "name": "hashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1867,
+                  "src": "482:14:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1864,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "482:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "481:16:18"
+            },
+            "scope": 1959,
+            "src": "398:100:18",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "documentation": "Event emitted when a vehicle made the appropriate deposit to enter the road system.\n@param vehicle The address of the vehicle that entered the road system.\n@param entryBooth The declared entry booth by which the vehicle will enter the system.\n@param exitSecretHashed A hashed secret that, when solved, allows the operator to pay itself.\n@param depositedWeis The amount that was deposited as part of the entry.",
+            "id": 1877,
+            "name": "LogRoadEntered",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1876,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1869,
+                  "indexed": true,
+                  "name": "vehicle",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1877,
+                  "src": "995:23:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1868,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "995:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1871,
+                  "indexed": true,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1877,
+                  "src": "1028:26:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1870,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1028:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1873,
+                  "indexed": true,
+                  "name": "exitSecretHashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1877,
+                  "src": "1064:32:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1872,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1064:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1875,
+                  "indexed": false,
+                  "name": "depositedWeis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1877,
+                  "src": "1106:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1874,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1106:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "985:140:18"
+            },
+            "src": "965:161:18"
+          },
+          {
+            "body": null,
+            "documentation": "Called by the vehicle entering a road system.\nOff-chain, the entry toll booth will open its gate after a successful deposit and a confirmation\nof the vehicle identity.\n    It should roll back when the contract is in the `true` paused state.\n    It should roll back when the vehicle is not a registered vehicle.\n    It should roll back when the vehicle is not allowed on this road system.\n    It should roll back if `entryBooth` is not a tollBooth.\n    It should roll back if less than deposit * multiplier was sent alongside.\n    It should roll back if `exitSecretHashed` has previously been used by anyone to enter.\n    It should be possible for a vehicle to enter \"again\" before it has exited from the \n      previous entry.\n@param entryBooth The declared entry booth by which the vehicle will enter the system.\n@param exitSecretHashed A hashed secret that when solved allows the operator to pay itself.\n@return Whether the action was successful.\nEmits LogRoadEntered with:\n    The sender of the action.\n    The address of the entry booth.\n    The hashed secret used to deposit.\n    The amount deposited by the vehicle.",
+            "id": 1886,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "enterRoad",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1882,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1879,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1886,
+                  "src": "2435:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1878,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2435:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1881,
+                  "name": "exitSecretHashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1886,
+                  "src": "2467:24:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1880,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2467:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2421:71:18"
+            },
+            "payable": true,
+            "returnParameters": {
+              "id": 1885,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1884,
+                  "name": "success",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1886,
+                  "src": "2541:12:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1883,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2541:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2540:14:18"
+            },
+            "scope": 1959,
+            "src": "2403:152:18",
+            "stateMutability": "payable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@param exitSecretHashed The hashed secret used by the vehicle when entering the road.\n@return The information pertaining to the entry of the vehicle.\n    vehicle: the address of the vehicle that entered the system.\n    entryBooth: the address of the booth the vehicle entered at.\n    depositedWeis: how much the vehicle deposited when entering.\nAfter the vehicle has exited, `depositedWeis` should be returned as `0`.\nIf no vehicles had ever entered with this hash, all values should be returned as `0`.",
+            "id": 1897,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getVehicleEntry",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1889,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1888,
+                  "name": "exitSecretHashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1897,
+                  "src": "3155:24:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1887,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3155:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3154:26:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1896,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1891,
+                  "name": "vehicle",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1897,
+                  "src": "3242:15:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1890,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3242:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1893,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1897,
+                  "src": "3271:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1892,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3271:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1895,
+                  "name": "depositedWeis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1897,
+                  "src": "3303:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1894,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3303:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3228:94:18"
+            },
+            "scope": 1959,
+            "src": "3130:193:18",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "documentation": "Event emitted when a vehicle exits a road system.\n@param exitBooth The toll booth that saw the vehicle exit.\n@param exitSecretHashed The hash of the secret given by the vehicle as it\n    passed by the exit booth.\n@param finalFee The toll charge effectively paid by the vehicle, and taken from the deposit.\n@param refundWeis The amount refunded to the vehicle, i.e. deposit - charge.",
+            "id": 1907,
+            "name": "LogRoadExited",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1906,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1899,
+                  "indexed": true,
+                  "name": "exitBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1907,
+                  "src": "3799:25:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1898,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3799:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1901,
+                  "indexed": true,
+                  "name": "exitSecretHashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1907,
+                  "src": "3834:32:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1900,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3834:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1903,
+                  "indexed": false,
+                  "name": "finalFee",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1907,
+                  "src": "3876:13:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1902,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3876:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1905,
+                  "indexed": false,
+                  "name": "refundWeis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1907,
+                  "src": "3899:15:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1904,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3899:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3789:126:18"
+            },
+            "src": "3770:146:18"
+          },
+          {
+            "anonymous": false,
+            "documentation": "Event emitted when a vehicle used a route that has no known fee.\nIt is a signal for the oracle to provide a price for the entry / exit pair.\n@param exitSecretHashed The hashed secret that was defined at the time of entry.\n@param entryBooth The address of the booth the vehicle entered at.\n@param exitBooth The address of the booth the vehicle exited at.",
+            "id": 1915,
+            "name": "LogPendingPayment",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1914,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1909,
+                  "indexed": true,
+                  "name": "exitSecretHashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1915,
+                  "src": "4360:32:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1908,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4360:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1911,
+                  "indexed": true,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1915,
+                  "src": "4402:26:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1910,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4402:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1913,
+                  "indexed": true,
+                  "name": "exitBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1915,
+                  "src": "4438:25:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1912,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4438:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4350:114:18"
+            },
+            "src": "4327:138:18"
+          },
+          {
+            "body": null,
+            "documentation": "Called by the exit booth.\n    It should roll back when the contract is in the `true` paused state.\n    It should roll back when the sender is not a toll booth.\n    It should roll back when the vehicle is no longer a registered vehicle.\n    It should roll back when the vehicle is no longer allowed on this road system.\n    It should roll back if the exit is same as the entry.\n    It should roll back if hashing the secret does not match a hashed one.\n    It should roll back if the secret has already been reported on exit.\n@param exitSecretClear The secret given by the vehicle as it passed by the exit booth.\n@return status:\n  1: success, -> emits LogRoadExited with:\n      The sender of the action.\n      The hashed secret corresponding to the vehicle trip.\n      The effective charge paid by the vehicle.\n      The amount refunded to the vehicle.\n  2: pending oracle -> emits LogPendingPayment with:\n      The hashed secret corresponding to the vehicle trip.\n      The entry booth of the vehicle trip.\n      The exit booth of the vehicle trip.",
+            "id": 1922,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "reportExitRoad",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1918,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1917,
+                  "name": "exitSecretClear",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1922,
+                  "src": "5693:23:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1916,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5693:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5692:25:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1921,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1920,
+                  "name": "status",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1922,
+                  "src": "5750:11:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1919,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5750:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5749:13:18"
+            },
+            "scope": 1959,
+            "src": "5669:94:18",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@param entryBooth the entry booth that has pending payments.\n@param exitBooth the exit booth that has pending payments.\n@return the number of payments that are pending because the price for the\nentry-exit pair was unknown.",
+            "id": 1931,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getPendingPaymentCount",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1927,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1924,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1931,
+                  "src": "6068:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1923,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "6068:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1926,
+                  "name": "exitBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1931,
+                  "src": "6088:17:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1925,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "6088:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "6067:39:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1930,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1929,
+                  "name": "count",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1931,
+                  "src": "6156:10:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1928,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "6156:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "6155:12:18"
+            },
+            "scope": 1959,
+            "src": "6036:132:18",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "Can be called by anyone. In case more than 1 payment was pending when the oracle gave a price.\n    It should roll back when the contract is in `true` paused state.\n    It should roll back if booths are not really booths.\n    It should roll back if there are fewer than `count` pending payments that are solvable.\n    It should roll back if `count` is `0`.\n@param entryBooth the entry booth that has pending payments.\n@param exitBooth the exit booth that has pending payments.\n@param count the number of pending payments to clear for the exit booth.\n@return Whether the action was successful.\nEmits LogRoadExited as many times as count, each with:\n      The address of the exit booth.\n      The hashed secret corresponding to the vehicle trip.\n      The effective charge paid by the vehicle.\n      The amount refunded to the vehicle.",
+            "id": 1942,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "clearSomePendingPayments",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1938,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1933,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1942,
+                  "src": "7168:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1932,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7168:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1935,
+                  "name": "exitBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1942,
+                  "src": "7200:17:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1934,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7200:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1937,
+                  "name": "count",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1942,
+                  "src": "7231:10:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1936,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7231:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7154:88:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1941,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1940,
+                  "name": "success",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1942,
+                  "src": "7275:12:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1939,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7275:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7274:14:18"
+            },
+            "scope": 1959,
+            "src": "7121:168:18",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@return The amount that has been collected through successful payments. This is the current\n  amount, it does not reflect historical fees. So this value goes back to zero after a call\n  to `withdrawCollectedFees`.",
+            "id": 1947,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getCollectedFeesAmount",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1943,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "7577:2:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1946,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1945,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1947,
+                  "src": "7628:11:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1944,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7628:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7627:13:18"
+            },
+            "scope": 1959,
+            "src": "7546:95:18",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "documentation": "Event emitted when the owner collects the fees.\n@param owner The account that sent the request.\n@param amount The amount collected.",
+            "id": 1953,
+            "name": "LogFeesCollected",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1952,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1949,
+                  "indexed": true,
+                  "name": "owner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1953,
+                  "src": "7848:21:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1948,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7848:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1951,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1953,
+                  "src": "7879:11:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1950,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7879:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7838:53:18"
+            },
+            "src": "7816:76:18"
+          },
+          {
+            "body": null,
+            "documentation": "Called by the owner of the contract to withdraw all collected fees (not deposits) to date.\n    It should roll back if any other address is calling this function.\n    It should roll back if there is no fee to collect.\n    It should roll back if the transfer failed.\n@return success Whether the operation was successful.\nEmits LogFeesCollected with:\n    The sender of the action.\n    The amount collected.",
+            "id": 1958,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "withdrawCollectedFees",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1954,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "8404:2:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1957,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1956,
+                  "name": "success",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1958,
+                  "src": "8438:12:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1955,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "8438:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "8437:14:18"
+            },
+            "scope": 1959,
+            "src": "8374:78:18",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1960,
+        "src": "26:10489:18"
+      }
+    ],
+    "src": "0:10515:18"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/vagrant/DAPPS/contracts/interfaces/TollBoothOperatorI.sol",
+    "exportedSymbols": {
+      "TollBoothOperatorI": [
+        1959
+      ]
+    },
+    "id": 1960,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1860,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".21"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:18"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1959,
+        "linearizedBaseContracts": [
+          1959
+        ],
+        "name": "TollBoothOperatorI",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "This provides a single source of truth for the encoding algorithm.\nIt will be called:\n    - by the vehicle prior to sending a deposit.\n    - by the contract itself when submitted a clear password by a toll booth.\n@param secret The secret to be hashed.\n@return the hashed secret.",
+            "id": 1867,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "hashSecret",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1863,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1862,
+                  "name": "secret",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1867,
+                  "src": "418:14:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1861,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "418:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "417:16:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1866,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1865,
+                  "name": "hashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1867,
+                  "src": "482:14:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1864,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "482:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "481:16:18"
+            },
+            "scope": 1959,
+            "src": "398:100:18",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "documentation": "Event emitted when a vehicle made the appropriate deposit to enter the road system.\n@param vehicle The address of the vehicle that entered the road system.\n@param entryBooth The declared entry booth by which the vehicle will enter the system.\n@param exitSecretHashed A hashed secret that, when solved, allows the operator to pay itself.\n@param depositedWeis The amount that was deposited as part of the entry.",
+            "id": 1877,
+            "name": "LogRoadEntered",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1876,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1869,
+                  "indexed": true,
+                  "name": "vehicle",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1877,
+                  "src": "995:23:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1868,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "995:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1871,
+                  "indexed": true,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1877,
+                  "src": "1028:26:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1870,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1028:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1873,
+                  "indexed": true,
+                  "name": "exitSecretHashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1877,
+                  "src": "1064:32:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1872,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1064:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1875,
+                  "indexed": false,
+                  "name": "depositedWeis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1877,
+                  "src": "1106:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1874,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1106:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "985:140:18"
+            },
+            "src": "965:161:18"
+          },
+          {
+            "body": null,
+            "documentation": "Called by the vehicle entering a road system.\nOff-chain, the entry toll booth will open its gate after a successful deposit and a confirmation\nof the vehicle identity.\n    It should roll back when the contract is in the `true` paused state.\n    It should roll back when the vehicle is not a registered vehicle.\n    It should roll back when the vehicle is not allowed on this road system.\n    It should roll back if `entryBooth` is not a tollBooth.\n    It should roll back if less than deposit * multiplier was sent alongside.\n    It should roll back if `exitSecretHashed` has previously been used by anyone to enter.\n    It should be possible for a vehicle to enter \"again\" before it has exited from the \n      previous entry.\n@param entryBooth The declared entry booth by which the vehicle will enter the system.\n@param exitSecretHashed A hashed secret that when solved allows the operator to pay itself.\n@return Whether the action was successful.\nEmits LogRoadEntered with:\n    The sender of the action.\n    The address of the entry booth.\n    The hashed secret used to deposit.\n    The amount deposited by the vehicle.",
+            "id": 1886,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "enterRoad",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1882,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1879,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1886,
+                  "src": "2435:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1878,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2435:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1881,
+                  "name": "exitSecretHashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1886,
+                  "src": "2467:24:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1880,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2467:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2421:71:18"
+            },
+            "payable": true,
+            "returnParameters": {
+              "id": 1885,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1884,
+                  "name": "success",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1886,
+                  "src": "2541:12:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1883,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2541:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2540:14:18"
+            },
+            "scope": 1959,
+            "src": "2403:152:18",
+            "stateMutability": "payable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@param exitSecretHashed The hashed secret used by the vehicle when entering the road.\n@return The information pertaining to the entry of the vehicle.\n    vehicle: the address of the vehicle that entered the system.\n    entryBooth: the address of the booth the vehicle entered at.\n    depositedWeis: how much the vehicle deposited when entering.\nAfter the vehicle has exited, `depositedWeis` should be returned as `0`.\nIf no vehicles had ever entered with this hash, all values should be returned as `0`.",
+            "id": 1897,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getVehicleEntry",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1889,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1888,
+                  "name": "exitSecretHashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1897,
+                  "src": "3155:24:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1887,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3155:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3154:26:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1896,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1891,
+                  "name": "vehicle",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1897,
+                  "src": "3242:15:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1890,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3242:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1893,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1897,
+                  "src": "3271:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1892,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3271:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1895,
+                  "name": "depositedWeis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1897,
+                  "src": "3303:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1894,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3303:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3228:94:18"
+            },
+            "scope": 1959,
+            "src": "3130:193:18",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "documentation": "Event emitted when a vehicle exits a road system.\n@param exitBooth The toll booth that saw the vehicle exit.\n@param exitSecretHashed The hash of the secret given by the vehicle as it\n    passed by the exit booth.\n@param finalFee The toll charge effectively paid by the vehicle, and taken from the deposit.\n@param refundWeis The amount refunded to the vehicle, i.e. deposit - charge.",
+            "id": 1907,
+            "name": "LogRoadExited",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1906,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1899,
+                  "indexed": true,
+                  "name": "exitBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1907,
+                  "src": "3799:25:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1898,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3799:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1901,
+                  "indexed": true,
+                  "name": "exitSecretHashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1907,
+                  "src": "3834:32:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1900,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3834:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1903,
+                  "indexed": false,
+                  "name": "finalFee",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1907,
+                  "src": "3876:13:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1902,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3876:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1905,
+                  "indexed": false,
+                  "name": "refundWeis",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1907,
+                  "src": "3899:15:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1904,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3899:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3789:126:18"
+            },
+            "src": "3770:146:18"
+          },
+          {
+            "anonymous": false,
+            "documentation": "Event emitted when a vehicle used a route that has no known fee.\nIt is a signal for the oracle to provide a price for the entry / exit pair.\n@param exitSecretHashed The hashed secret that was defined at the time of entry.\n@param entryBooth The address of the booth the vehicle entered at.\n@param exitBooth The address of the booth the vehicle exited at.",
+            "id": 1915,
+            "name": "LogPendingPayment",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1914,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1909,
+                  "indexed": true,
+                  "name": "exitSecretHashed",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1915,
+                  "src": "4360:32:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1908,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4360:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1911,
+                  "indexed": true,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1915,
+                  "src": "4402:26:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1910,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4402:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1913,
+                  "indexed": true,
+                  "name": "exitBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1915,
+                  "src": "4438:25:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1912,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4438:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4350:114:18"
+            },
+            "src": "4327:138:18"
+          },
+          {
+            "body": null,
+            "documentation": "Called by the exit booth.\n    It should roll back when the contract is in the `true` paused state.\n    It should roll back when the sender is not a toll booth.\n    It should roll back when the vehicle is no longer a registered vehicle.\n    It should roll back when the vehicle is no longer allowed on this road system.\n    It should roll back if the exit is same as the entry.\n    It should roll back if hashing the secret does not match a hashed one.\n    It should roll back if the secret has already been reported on exit.\n@param exitSecretClear The secret given by the vehicle as it passed by the exit booth.\n@return status:\n  1: success, -> emits LogRoadExited with:\n      The sender of the action.\n      The hashed secret corresponding to the vehicle trip.\n      The effective charge paid by the vehicle.\n      The amount refunded to the vehicle.\n  2: pending oracle -> emits LogPendingPayment with:\n      The hashed secret corresponding to the vehicle trip.\n      The entry booth of the vehicle trip.\n      The exit booth of the vehicle trip.",
+            "id": 1922,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "reportExitRoad",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1918,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1917,
+                  "name": "exitSecretClear",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1922,
+                  "src": "5693:23:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1916,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5693:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5692:25:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1921,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1920,
+                  "name": "status",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1922,
+                  "src": "5750:11:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1919,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5750:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5749:13:18"
+            },
+            "scope": 1959,
+            "src": "5669:94:18",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@param entryBooth the entry booth that has pending payments.\n@param exitBooth the exit booth that has pending payments.\n@return the number of payments that are pending because the price for the\nentry-exit pair was unknown.",
+            "id": 1931,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getPendingPaymentCount",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1927,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1924,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1931,
+                  "src": "6068:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1923,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "6068:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1926,
+                  "name": "exitBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1931,
+                  "src": "6088:17:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1925,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "6088:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "6067:39:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1930,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1929,
+                  "name": "count",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1931,
+                  "src": "6156:10:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1928,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "6156:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "6155:12:18"
+            },
+            "scope": 1959,
+            "src": "6036:132:18",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "Can be called by anyone. In case more than 1 payment was pending when the oracle gave a price.\n    It should roll back when the contract is in `true` paused state.\n    It should roll back if booths are not really booths.\n    It should roll back if there are fewer than `count` pending payments that are solvable.\n    It should roll back if `count` is `0`.\n@param entryBooth the entry booth that has pending payments.\n@param exitBooth the exit booth that has pending payments.\n@param count the number of pending payments to clear for the exit booth.\n@return Whether the action was successful.\nEmits LogRoadExited as many times as count, each with:\n      The address of the exit booth.\n      The hashed secret corresponding to the vehicle trip.\n      The effective charge paid by the vehicle.\n      The amount refunded to the vehicle.",
+            "id": 1942,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "clearSomePendingPayments",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1938,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1933,
+                  "name": "entryBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1942,
+                  "src": "7168:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1932,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7168:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1935,
+                  "name": "exitBooth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1942,
+                  "src": "7200:17:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1934,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7200:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1937,
+                  "name": "count",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1942,
+                  "src": "7231:10:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1936,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7231:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7154:88:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1941,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1940,
+                  "name": "success",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1942,
+                  "src": "7275:12:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1939,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7275:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7274:14:18"
+            },
+            "scope": 1959,
+            "src": "7121:168:18",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@return The amount that has been collected through successful payments. This is the current\n  amount, it does not reflect historical fees. So this value goes back to zero after a call\n  to `withdrawCollectedFees`.",
+            "id": 1947,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getCollectedFeesAmount",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1943,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "7577:2:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1946,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1945,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1947,
+                  "src": "7628:11:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1944,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7628:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7627:13:18"
+            },
+            "scope": 1959,
+            "src": "7546:95:18",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "documentation": "Event emitted when the owner collects the fees.\n@param owner The account that sent the request.\n@param amount The amount collected.",
+            "id": 1953,
+            "name": "LogFeesCollected",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1952,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1949,
+                  "indexed": true,
+                  "name": "owner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1953,
+                  "src": "7848:21:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1948,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7848:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1951,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1953,
+                  "src": "7879:11:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1950,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7879:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7838:53:18"
+            },
+            "src": "7816:76:18"
+          },
+          {
+            "body": null,
+            "documentation": "Called by the owner of the contract to withdraw all collected fees (not deposits) to date.\n    It should roll back if any other address is calling this function.\n    It should roll back if there is no fee to collect.\n    It should roll back if the transfer failed.\n@return success Whether the operation was successful.\nEmits LogFeesCollected with:\n    The sender of the action.\n    The amount collected.",
+            "id": 1958,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "withdrawCollectedFees",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1954,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "8404:2:18"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1957,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1956,
+                  "name": "success",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1958,
+                  "src": "8438:12:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1955,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "8438:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "8437:14:18"
+            },
+            "scope": 1959,
+            "src": "8374:78:18",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1960,
+        "src": "26:10489:18"
+      }
+    ],
+    "src": "0:10515:18"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.21+commit.dfe3193c.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-07-02T14:38:41.115Z"
+}

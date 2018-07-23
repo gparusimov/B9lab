@@ -1,0 +1,558 @@
+{
+  "contractName": "RoutePriceHolderMock",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "tollBooth",
+          "type": "address"
+        }
+      ],
+      "name": "removeTollBooth",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "setOwner",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "tollBooth",
+          "type": "address"
+        }
+      ],
+      "name": "addTollBooth",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "entryBooth",
+          "type": "address"
+        },
+        {
+          "name": "exitBooth",
+          "type": "address"
+        }
+      ],
+      "name": "getRoutePrice",
+      "outputs": [
+        {
+          "name": "priceWeis",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "tollBooth",
+          "type": "address"
+        }
+      ],
+      "name": "isTollBooth",
+      "outputs": [
+        {
+          "name": "isIndeed",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getOwner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "entryBooth",
+          "type": "address"
+        },
+        {
+          "name": "exitBooth",
+          "type": "address"
+        },
+        {
+          "name": "priceWeis",
+          "type": "uint256"
+        }
+      ],
+      "name": "setRoutePrice",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "LogOwnerSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "tollBooth",
+          "type": "address"
+        }
+      ],
+      "name": "LogTollBoothAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "tollBooth",
+          "type": "address"
+        }
+      ],
+      "name": "LogTollBoothRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "entryBooth",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "exitBooth",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "priceWeis",
+          "type": "uint256"
+        }
+      ],
+      "name": "LogRoutePriceSet",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x6060604052341561000f57600080fd5b336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550610bf88061005e6000396000f300606060405260043610610083576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630bbbcbb21461008857806313af4035146100d95780632c333eab1461012a57806350295c671461017b57806350bb553a146101e7578063893d20e814610238578063e23d7c5b1461028d575b600080fd5b341561009357600080fd5b6100bf600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610306565b604051808215151515815260200191505060405180910390f35b34156100e457600080fd5b610110600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919050506104b2565b604051808215151515815260200191505060405180910390f35b341561013557600080fd5b610161600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610655565b604051808215151515815260200191505060405180910390f35b341561018657600080fd5b6101d1600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610801565b6040518082815260200191505060405180910390f35b34156101f257600080fd5b61021e600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610888565b604051808215151515815260200191505060405180910390f35b341561024357600080fd5b61024b6108de565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b341561029857600080fd5b6102ec600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610907565b604051808215151515815260200191505060405180910390f35b60003373ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614151561036357600080fd5b600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff161415151561039f57600080fd5b600160008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1615156103f757600080fd5b6000600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff0219169083151502179055508173ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f5b34220b1e6888774f5c1badf295633d5d8d4ae02d5e3019e422b3debfe8967860405160405180910390a360019050919050565b60003373ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614151561050f57600080fd5b60008273ffffffffffffffffffffffffffffffffffffffff161415151561053557600080fd5b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff161415151561059157600080fd5b816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fa1d2149652d81eb35c360c115fc7ac594124cb1ea8a5a33e9a7f5768c62869fb60405160405180910390a360019050919050565b60003373ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff161415156106b257600080fd5b600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff16141515156106ee57600080fd5b600160008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1615151561074757600080fd5b60018060008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff0219169083151502179055508173ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fe8f587f6ae5ef5f7560b94b9369dd242c9de0588c328add1a785044abf837c6d60405160405180910390a360019050919050565b6000600260008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b6000600160008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff169050919050565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b60003373ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614151561096457600080fd5b600073ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff16141580156109ce5750600073ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff1614155b15156109d957600080fd5b6109e284610888565b80156109f357506109f283610888565b5b15156109fe57600080fd5b8273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff1614151515610a3957600080fd5b81600260008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205414151515610ac457600080fd5b81600260008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f5b631b37e5dfb698eace7497bcae58e93fac69e007127739fc79109d99c58332856040518082815260200191505060405180910390a46001905093925050505600a165627a7a72305820ee7660dab885272b38a98519c7e6093ecc45ed2445fcdc0c4e9da2204b8b9d3a0029",
+  "deployedBytecode": "0x606060405260043610610083576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630bbbcbb21461008857806313af4035146100d95780632c333eab1461012a57806350295c671461017b57806350bb553a146101e7578063893d20e814610238578063e23d7c5b1461028d575b600080fd5b341561009357600080fd5b6100bf600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610306565b604051808215151515815260200191505060405180910390f35b34156100e457600080fd5b610110600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919050506104b2565b604051808215151515815260200191505060405180910390f35b341561013557600080fd5b610161600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610655565b604051808215151515815260200191505060405180910390f35b341561018657600080fd5b6101d1600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610801565b6040518082815260200191505060405180910390f35b34156101f257600080fd5b61021e600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610888565b604051808215151515815260200191505060405180910390f35b341561024357600080fd5b61024b6108de565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b341561029857600080fd5b6102ec600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610907565b604051808215151515815260200191505060405180910390f35b60003373ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614151561036357600080fd5b600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff161415151561039f57600080fd5b600160008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1615156103f757600080fd5b6000600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff0219169083151502179055508173ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f5b34220b1e6888774f5c1badf295633d5d8d4ae02d5e3019e422b3debfe8967860405160405180910390a360019050919050565b60003373ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614151561050f57600080fd5b60008273ffffffffffffffffffffffffffffffffffffffff161415151561053557600080fd5b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff161415151561059157600080fd5b816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fa1d2149652d81eb35c360c115fc7ac594124cb1ea8a5a33e9a7f5768c62869fb60405160405180910390a360019050919050565b60003373ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff161415156106b257600080fd5b600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff16141515156106ee57600080fd5b600160008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1615151561074757600080fd5b60018060008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff0219169083151502179055508173ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fe8f587f6ae5ef5f7560b94b9369dd242c9de0588c328add1a785044abf837c6d60405160405180910390a360019050919050565b6000600260008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b6000600160008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff169050919050565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b60003373ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614151561096457600080fd5b600073ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff16141580156109ce5750600073ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff1614155b15156109d957600080fd5b6109e284610888565b80156109f357506109f283610888565b5b15156109fe57600080fd5b8273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff1614151515610a3957600080fd5b81600260008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205414151515610ac457600080fd5b81600260008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f5b631b37e5dfb698eace7497bcae58e93fac69e007127739fc79109d99c58332856040518082815260200191505060405180910390a46001905093925050505600a165627a7a72305820ee7660dab885272b38a98519c7e6093ecc45ed2445fcdc0c4e9da2204b8b9d3a0029",
+  "sourceMap": "117:122:20:-;;;191:46;;;;;;;;170:10:3;162:5;;:18;;;;;;;;;;;;;;;;;;117:122:20;;;;;;",
+  "deployedSourceMap": "117:122:20:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;701:307:8;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;278:259:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;248:301:8;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;925:176:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;555:140:8;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;543:94:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;378:541:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;701:307:8;782:12;243:10:3;234:19;;:5;;;;;;;;;;;:19;;;226:28;;;;;;;;840:1:8;818:24;;:9;:24;;;;810:33;;;;;;;;861:10;:21;872:9;861:21;;;;;;;;;;;;;;;;;;;;;;;;;853:30;;;;;;;;918:5;894:10;:21;905:9;894:21;;;;;;;;;;;;;;;;:29;;;;;;;;;;;;;;;;;;970:9;938:42;;958:10;938:42;;;;;;;;;;;;997:4;990:11;;701:307;;;:::o;278:259:3:-;351:12;243:10;234:19;;:5;;;;;;;;;;;:19;;;226:28;;;;;;;;399:1;387:8;:13;;;;379:22;;;;;;;;431:5;;;;;;;;;;;419:17;;:8;:17;;;;411:26;;;;;;;;456:8;448:5;;:16;;;;;;;;;;;;;;;;;;503:5;;;;;;;;;;;479:30;;491:10;479:30;;;;;;;;;;;;526:4;519:11;;278:259;;;:::o;248:301:8:-;326:12;243:10:3;234:19;;:5;;;;;;;;;;;:19;;;226:28;;;;;;;;383:1:8;362:23;;:9;:23;;;;354:32;;;;;;;;405:10;:21;416:9;405:21;;;;;;;;;;;;;;;;;;;;;;;;;404:22;396:31;;;;;;;;462:4;438:10;:21;449:9;438:21;;;;;;;;;;;;;;;;:28;;;;;;;;;;;;;;;;;;511:9;481:40;;499:10;481:40;;;;;;;;;;;;538:4;531:11;;248:301;;;:::o;925:176:7:-;1023:14;1060:11;:23;1072:10;1060:23;;;;;;;;;;;;;;;:34;1084:9;1060:34;;;;;;;;;;;;;;;;1053:41;;925:176;;;;:::o;555:140:8:-;631:13;667:10;:21;678:9;667:21;;;;;;;;;;;;;;;;;;;;;;;;;660:28;;555:140;;;:::o;543:94:3:-;595:7;625:5;;;;;;;;;;;618:12;;543:94;:::o;378:541:7:-;493:12;243:10:3;234:19;;:5;;;;;;;;;;;:19;;;226:28;;;;;;;;551:1:7;529:24;;:10;:24;;;;:51;;;;;578:1;557:23;;:9;:23;;;;529:51;521:60;;;;;;;;599:23;611:10;599:11;:23::i;:::-;:49;;;;;626:22;638:9;626:11;:22::i;:::-;599:49;591:58;;;;;;;;681:9;667:23;;:10;:23;;;;659:32;;;;;;;;747:9;709:11;:23;721:10;709:23;;;;;;;;;;;;;;;:34;733:9;709:34;;;;;;;;;;;;;;;;:47;;701:56;;;;;;;;804:9;767:11;:23;779:10;767:23;;;;;;;;;;;;;;;:34;791:9;767:34;;;;;;;;;;;;;;;:46;;;;870:9;829:62;;858:10;829:62;;846:10;829:62;;;881:9;829:62;;;;;;;;;;;;;;;;;;908:4;901:11;;378:541;;;;;:::o",
+  "source": "pragma solidity ^0.4.21;\n\nimport \"../Owned.sol\";\nimport \"../TollBoothHolder.sol\";\nimport \"../RoutePriceHolder.sol\";\n\ncontract RoutePriceHolderMock is TollBoothHolder, RoutePriceHolder {\n\n    function RoutePriceHolderMock() public {\n    }\n}",
+  "sourcePath": "/home/vagrant/DAPPS/contracts/mock/RoutePriceHolderMock.sol",
+  "ast": {
+    "absolutePath": "/home/vagrant/DAPPS/contracts/mock/RoutePriceHolderMock.sol",
+    "exportedSymbols": {
+      "RoutePriceHolderMock": [
+        2016
+      ]
+    },
+    "id": 2017,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2004,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".21"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:20"
+      },
+      {
+        "absolutePath": "/home/vagrant/DAPPS/contracts/Owned.sol",
+        "file": "../Owned.sol",
+        "id": 2005,
+        "nodeType": "ImportDirective",
+        "scope": 2017,
+        "sourceUnit": 266,
+        "src": "26:22:20",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/vagrant/DAPPS/contracts/TollBoothHolder.sol",
+        "file": "../TollBoothHolder.sol",
+        "id": 2006,
+        "nodeType": "ImportDirective",
+        "scope": 2017,
+        "sourceUnit": 833,
+        "src": "49:32:20",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/vagrant/DAPPS/contracts/RoutePriceHolder.sol",
+        "file": "../RoutePriceHolder.sol",
+        "id": 2007,
+        "nodeType": "ImportDirective",
+        "scope": 2017,
+        "sourceUnit": 727,
+        "src": "82:33:20",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": [],
+            "baseName": {
+              "contractScope": null,
+              "id": 2008,
+              "name": "TollBoothHolder",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 832,
+              "src": "150:15:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_TollBoothHolder_$832",
+                "typeString": "contract TollBoothHolder"
+              }
+            },
+            "id": 2009,
+            "nodeType": "InheritanceSpecifier",
+            "src": "150:15:20"
+          },
+          {
+            "arguments": [],
+            "baseName": {
+              "contractScope": null,
+              "id": 2010,
+              "name": "RoutePriceHolder",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 726,
+              "src": "167:16:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_RoutePriceHolder_$726",
+                "typeString": "contract RoutePriceHolder"
+              }
+            },
+            "id": 2011,
+            "nodeType": "InheritanceSpecifier",
+            "src": "167:16:20"
+          }
+        ],
+        "contractDependencies": [
+          265,
+          726,
+          832,
+          1679,
+          1822,
+          1858
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 2016,
+        "linearizedBaseContracts": [
+          2016,
+          726,
+          832,
+          265,
+          1679,
+          1858,
+          1822
+        ],
+        "name": "RoutePriceHolderMock",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 2014,
+              "nodeType": "Block",
+              "src": "230:7:20",
+              "statements": []
+            },
+            "documentation": null,
+            "id": 2015,
+            "implemented": true,
+            "isConstructor": true,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "RoutePriceHolderMock",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2012,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "220:2:20"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2013,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "230:0:20"
+            },
+            "scope": 2016,
+            "src": "191:46:20",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 2017,
+        "src": "117:122:20"
+      }
+    ],
+    "src": "0:239:20"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/vagrant/DAPPS/contracts/mock/RoutePriceHolderMock.sol",
+    "exportedSymbols": {
+      "RoutePriceHolderMock": [
+        2016
+      ]
+    },
+    "id": 2017,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2004,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".21"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:20"
+      },
+      {
+        "absolutePath": "/home/vagrant/DAPPS/contracts/Owned.sol",
+        "file": "../Owned.sol",
+        "id": 2005,
+        "nodeType": "ImportDirective",
+        "scope": 2017,
+        "sourceUnit": 266,
+        "src": "26:22:20",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/vagrant/DAPPS/contracts/TollBoothHolder.sol",
+        "file": "../TollBoothHolder.sol",
+        "id": 2006,
+        "nodeType": "ImportDirective",
+        "scope": 2017,
+        "sourceUnit": 833,
+        "src": "49:32:20",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/vagrant/DAPPS/contracts/RoutePriceHolder.sol",
+        "file": "../RoutePriceHolder.sol",
+        "id": 2007,
+        "nodeType": "ImportDirective",
+        "scope": 2017,
+        "sourceUnit": 727,
+        "src": "82:33:20",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": [],
+            "baseName": {
+              "contractScope": null,
+              "id": 2008,
+              "name": "TollBoothHolder",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 832,
+              "src": "150:15:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_TollBoothHolder_$832",
+                "typeString": "contract TollBoothHolder"
+              }
+            },
+            "id": 2009,
+            "nodeType": "InheritanceSpecifier",
+            "src": "150:15:20"
+          },
+          {
+            "arguments": [],
+            "baseName": {
+              "contractScope": null,
+              "id": 2010,
+              "name": "RoutePriceHolder",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 726,
+              "src": "167:16:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_RoutePriceHolder_$726",
+                "typeString": "contract RoutePriceHolder"
+              }
+            },
+            "id": 2011,
+            "nodeType": "InheritanceSpecifier",
+            "src": "167:16:20"
+          }
+        ],
+        "contractDependencies": [
+          265,
+          726,
+          832,
+          1679,
+          1822,
+          1858
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 2016,
+        "linearizedBaseContracts": [
+          2016,
+          726,
+          832,
+          265,
+          1679,
+          1858,
+          1822
+        ],
+        "name": "RoutePriceHolderMock",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 2014,
+              "nodeType": "Block",
+              "src": "230:7:20",
+              "statements": []
+            },
+            "documentation": null,
+            "id": 2015,
+            "implemented": true,
+            "isConstructor": true,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "RoutePriceHolderMock",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2012,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "220:2:20"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2013,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "230:0:20"
+            },
+            "scope": 2016,
+            "src": "191:46:20",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 2017,
+        "src": "117:122:20"
+      }
+    ],
+    "src": "0:239:20"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.21+commit.dfe3193c.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-07-02T14:38:41.116Z"
+}
